@@ -1,3 +1,7 @@
 /target
 **/*.rs.bk
 Cargo.lock
+/lib/target
+/.gradle
+/build
+/app/build
