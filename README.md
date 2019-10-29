@@ -31,4 +31,9 @@ android aar library to be used in an Android bitcoin wallet app.
    ./install-lib.sh
    ```
    
+1. Deploy AAR to local maven repository
+   
+   ```
+   gradle clean build uploadArchives
+   ```
 

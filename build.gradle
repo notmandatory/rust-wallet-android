@@ -4,7 +4,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+
     }
 
     buildscript {
@@ -19,8 +19,22 @@ allprojects {
             // in the individual module build.gradle files
         }
     }
+
+    apply plugin: 'maven'
+
+    group = 'org.rustwallet.android'
+    version = '0.1.0'
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                //repository(url: "file://[your local maven path here]")
+                repository(url: mavenLocal().getUrl())
+            }
+        }
+    }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//}

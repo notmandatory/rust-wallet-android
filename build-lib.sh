@@ -1,5 +1,5 @@
 #!/bin/bash
-cd lib
+cd rust
 cargo clean
 cargo build --target x86_64-apple-darwin --release
 cargo build --target aarch64-linux-android --release

@@ -1,5 +1,6 @@
 package org.rustwallet.android;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -15,6 +16,7 @@ public class ExampleUnitTest {
 
     // had to set VM options:
     // -Djava.library.path=/Users/steve/git/rust/rust-wallet-android/app/src/main/jniLibs/x86_64
+    @Ignore
     @Test
     public void accountLib_getMaster_notNull() {
         String path = System.getProperty("java.library.path");

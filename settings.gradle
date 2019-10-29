@@ -1,2 +1,2 @@
-include ':app'
-rootProject.name='Rust Wallet Android'
+include ':lib'
+rootProject.name='Rust Wallet Android Lib'
