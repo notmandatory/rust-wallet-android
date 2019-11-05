@@ -7,10 +7,12 @@ android aar library to be used in an Android bitcoin wallet app.
 
 ## Install rust-wallet-android libraries
 
-1. Set environment variables needed to build rust based library files, better
-   yet add these to your `.bash_profile`
+1. Set environment variables needed to build rust based library files and
+   to run local unit tests. Better yet add these to your `.bash_profile`
 
     ```
+    export JAVA_LIBRARY_PATH=<project_home>/lib/src/main/jniLibs/x86_64
+    
     export CC_aarch64_linux_android=$NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android24-clang
     export CXX_aarch64_linux_android=$NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android24-clang++
     export AR_aarch64_linux_android=$NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android-ar
@@ -36,4 +38,3 @@ android aar library to be used in an Android bitcoin wallet app.
    ```
    gradle clean build uploadArchives
    ```
-
