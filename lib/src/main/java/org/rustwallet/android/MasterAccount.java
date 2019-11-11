@@ -24,7 +24,7 @@ public class MasterAccount {
     public MasterAccount(String masterPublic, byte[] encrypted, long birth) {
         this.masterPublic = masterPublic;
         this.encrypted = encrypted;
-        this.birth = new Date(birth * 1000);
+        this.birth = new Date(birth);
     }
 
     public String getMasterPublic() {

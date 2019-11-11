@@ -8,51 +8,71 @@ use std::str::FromStr;
 use bitcoin::Network;
 use bitcoin::util::bip32::ExtendedPubKey;
 use bitcoin_wallet::account::{AccountAddressType, MasterAccount, MasterKeyEntropy};
+use bitcoin_wallet::mnemonic::Mnemonic;
 use jni::JNIEnv;
 use jni::objects::{JObject, JString, JValue};
 use jni::sys::{jbyteArray, jint, jlong, jobject, jobjectArray, jstring};
 
-use crate::account::get_account;
+use crate::account::{get_account, new_mnemonic};
 
 mod account;
 
-// org.rustwallet.android.AccountLib.getMaster(int entropy, int network, String passphrase): String;
+// org.rustwallet.android.AccountLib.getMaster(String mnemonic, long birth, int network, String passphrase, String pdPassphrase): String;
 #[no_mangle]
 pub unsafe extern fn Java_org_rustwallet_android_AccountLib_getMaster(env: JNIEnv, _: JObject,
-                                                                      j_entropy: jint,
+                                                                      j_mnemonic: JString,
+                                                                      j_birth: jlong,
                                                                       j_network: jint,
-                                                                      j_passphrase: JString) -> jobject {
-    let entropy = entropy_from_jint(j_entropy);
+                                                                      j_passphrase: JString,
+                                                                      j_pd_passphrase: JString) -> jobject {
+
+
+    let mnemonic = env.get_string(j_mnemonic)
+        .expect("error get_string j_mnemonic");
+    let mnemonic = mnemonic.to_str()
+        .expect("error to_str mnemonic");
+    let mnemonic = Mnemonic::from_str(mnemonic)
+        .expect("error Mnemonic::from_str(mnemonic)");
+
+    let birth = u64::try_from(j_birth/1000)
+        .expect("error u64::try_from(j_birth/1000)");
+
     let network = network_from_jint(j_network);
 
     let passphrase = env.get_string(j_passphrase)
         .expect("error get_string j_passphrase");
-
     let passphrase = passphrase.to_str()
         .expect("error to_str passphrase");
 
-    // create new master account
-    let master = MasterAccount::new(entropy, network, passphrase).unwrap();
+    let pd_passphrase = env.get_string(j_pd_passphrase).ok();
+    let pd_passphrase = pd_passphrase.iter()
+        .map(|pd| pd.to_str()
+            .expect("error pd_passphrase.to_str()"))
+        .next();
+
+    // create new master account from mnemonic
+
+    let master = MasterAccount::from_mnemonic(&mnemonic, birth, network, passphrase, pd_passphrase)
+        .expect("error MasterAccount::from_mnemonic");
 
     let master_public = master.master_public();
-
     let master_public_string = master_public.to_string();
-
     let master_public_JString = env.new_string(&master_public_string)
         .expect("error new_string master_public_string");
 
     let encrypted_array: jbyteArray = env.byte_array_from_slice(&master.encrypted().to_owned())
         .expect("error byte_array_from_slice encrypted");
 
-    let birth: jlong = master.birth() as jlong;
-
+    let j_birth: jlong = jlong::try_from(master.birth()*1000)
+        .expect("error jlong::try_from(master.birth()*1000)");
+    
     // MasterAccount(String masterPublic, byte[] encrypted, long birth)
     let j_master = env.new_object(
         "org/rustwallet/android/MasterAccount",
         "(Ljava/lang/String;[BJ)V",
         &[JValue::Object(master_public_JString.into()),
             JValue::Object(encrypted_array.into()),
-            birth.into()],
+            j_birth.into()],
     ).expect("error new_object MasterAccount");
 
     j_master.into_inner()
@@ -139,6 +159,18 @@ pub unsafe extern fn Java_org_rustwallet_android_AccountLib_getAccount(env: JNIE
     j_account.into_inner()
 }
 
+//   org.rustwallet.android.AccountLib.getMnemonic(MasterAccount master, String passphrase) : String[];
+#[no_mangle]
+pub unsafe extern fn Java_org_rustwallet_android_AccountLib_getMnemonic(env: JNIEnv, _: JObject,
+                                                                        j_entropy: jint) -> jstring {
+    let entropy = entropy_from_jint(j_entropy);
+    let mnemonic = new_mnemonic(entropy);
+    let mnemonic_JString = env.new_string(&mnemonic.to_string())
+        .expect("error env.new_string(mnemonic)");
+
+    mnemonic_JString.into_inner()
+}
+
 // helpers used for JNI
 
 fn entropy_from_jint(size: jint) -> MasterKeyEntropy {
@@ -194,7 +226,8 @@ fn master_from_jobject(env: &JNIEnv, j_master: &JObject) -> MasterAccount {
         .expect("error birth.getTime()");
     let j_birth = j_birth.j()
         .expect("error birth.getTime() to jlong");
-    let birth: u64 = j_birth as u64;
+    let birth: u64 = u64::try_from(j_birth/1000)
+        .expect("error u64::try_from(j_birth/1000");
 
     MasterAccount::from_encrypted(encrypted.as_slice(), public_master_key, birth)
 }

@@ -12,8 +12,9 @@ class AccountLib {
      * which is packaged with this application.
      */
 
-    native MasterAccount getMaster(int entropy, int network, String passphrase);
+    native MasterAccount getMaster(String mnemonic, long birth, int network, String passphrase, String pdPassphrase);
 
     native Account getAccount(MasterAccount masterAccount, String passphrase, int type, int accountNumber, int subAccountNumber, int seen, int lookahead);
 
+    native String getMnemonic(int entropy);
 }
