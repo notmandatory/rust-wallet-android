@@ -65,7 +65,7 @@ pub unsafe extern fn Java_org_rustwallet_android_AccountLib_getMaster(env: JNIEn
 
     let j_birth: jlong = jlong::try_from(master.birth()*1000)
         .expect("error jlong::try_from(master.birth()*1000)");
-    
+
     // MasterAccount(String masterPublic, byte[] encrypted, long birth)
     let j_master = env.new_object(
         "org/rustwallet/android/MasterAccount",
