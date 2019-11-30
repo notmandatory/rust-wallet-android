@@ -144,9 +144,9 @@ pub unsafe extern fn Java_org_rustwallet_android_AccountLib_getAccount(env: JNIE
         .expect("error jint::try_from(account.next)").into();
 
     let j_network: JValue = match account.network() {
-        Network::Bitcoin => 1 as jint,
-        Network::Testnet => 2 as jint,
-        Network::Regtest => 3 as jint,
+        Network::Bitcoin => 0 as jint,
+        Network::Testnet => 1 as jint,
+        Network::Regtest => 2 as jint,
     }.into();
 
     let j_account = env.new_object(
