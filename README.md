@@ -7,6 +7,14 @@ android aar library to be used in an Android bitcoin wallet app.
 
 ## Install rust-wallet-android libraries
 
+1. Install rust targets (if not already installed)
+   
+   ```
+   rustup target add aarch64-linux-android
+   rustup target add armv7-linux-androideabi
+   rustup target add i686-linux-android
+   ```
+
 1. Set environment variables needed to build rust based library files and
    to run local unit tests. Better yet add these to your `.bash_profile`
 
