@@ -35,7 +35,7 @@ android aar library to be used in an Android bitcoin wallet app.
 
    iOS:
    ```
-   cargo install lipo
+   cargo install cargo-lipo
    ```
 
 4. Set environment variables needed to build rust based library files and
